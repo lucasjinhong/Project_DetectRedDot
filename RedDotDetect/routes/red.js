@@ -2,39 +2,47 @@ var express = require('express');
 var path = require('path');
 var router = express.Router();
 var bodyParser = require('body-parser');
-var urlencodedParser = bodyParser.urlencoded({ extended: false });
+var urlencodedParser = bodyParser.urlencoded({limit: '50mb', extended: true});
 
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/";
-
-router.get('/', function(req, res, next) {
-    res.send("Hello");
-});
-
+ 
 router.post('/',urlencodedParser, (req, res, next) => {
-    response = req.body
-    /*{  
+    response = 
+    {  
         color:req.body.color,  
-        value:req.body.value 
-    };*/
+        value:req.body.value,
+        img:req.body.img, 
+    };
     console.log(response);
-    
+    res.send(response); 
+   
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         var dbo = db.db("DetectRedDot");
-        var myobj = [{record:response}];
+        var myobj = [{time: new Date(), records:[{color:response.color, value:response.value}], image:response.img}];
         dbo.collection("RedDot").insertMany(myobj, function(err, res) {
           if (err) throw err;
           console.log(res);
           db.close();
         });
     });
+
     console.log("data inserted");
-    
-    res.send(response); 
-    
-    ///setTimeout(() => res.redirect('/detect'), 5000);
-    ///console.log("redirecting");
 })
+
+router.get('/', function(req, res, next){
+    MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db("DetectRedDot");
+        var mysort = { time: -1 };
+        dbo.collection("RedDot").find({}).sort(mysort).limit(1).toArray(function(err, result) {
+          if (err) throw err;
+          db.close();
+          console.log(result[0]);
+          res.send(result[0]);
+        });
+    });
+ });
 
 module.exports = router;
