@@ -12,26 +12,25 @@ router.post('/',urlencodedParser, (req, res, next) => {
     {  
         color:req.body.color,  
         value:req.body.value,
-        img:req.body.img, 
+        date:req.body.time,
+        img:req.body.imgBase64
     };
-    console.log(response);
+
     res.send(response); 
    
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         var dbo = db.db("DetectRedDot");
-        var myobj = [{time: new Date(), records:[{color:response.color, value:response.value}], image:response.img}];
+        var myobj = [{time: new Date(), records:{color:response.color, value:response.value}, image:response.img}];
         dbo.collection("RedDot").insertMany(myobj, function(err, res) {
           if (err) throw err;
-          console.log(res);
+          console.log(res, '\n' , {color:response.color, value:response.value}, '\n');
           db.close();
         });
     });
-
-    console.log("data inserted");
 })
 
-router.get('/', function(req, res, next){
+router.get('/data', function(req, res, next){
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         var dbo = db.db("DetectRedDot");

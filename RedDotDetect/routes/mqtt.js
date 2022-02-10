@@ -18,6 +18,7 @@ const client = mqtt.connect(connectUrl, {
   reconnectPeriod: 1000,
 })
 
+/*
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/";
 
@@ -50,5 +51,6 @@ client.on('message', (topic, payload) => {
     });
     console.log('\nMQTT Received Message:', response)
 })
+*/
 
 module.exports = router;
