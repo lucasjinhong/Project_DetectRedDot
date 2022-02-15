@@ -9,6 +9,10 @@ var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/";
 
 router.get('/first10Record', function(req, res, next){
+
+  var number = req.query.number
+  console.log(Number(number))
+
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         var dbo = db.db("DetectRedDot");
@@ -17,7 +21,7 @@ router.get('/first10Record', function(req, res, next){
         var query = {};
         var projection = {image:0};
 
-        dbo.collection("RedDot").find(query).project(projection).sort(mysort).limit(10).toArray(function(err, result) {
+        dbo.collection("RedDot").find(query).project(projection).sort(mysort).limit(Number(number)).toArray(function(err, result) {
 
           if (err) throw err;
           db.close();

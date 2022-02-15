@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 
 class image_process:
@@ -10,9 +11,14 @@ class image_process:
 
     def process(self):
         # 從攝影機擷取一張影像
+        kernel_sharpening = np.array([[-1, -1, -1],
+                                      [-1, 9, -1],
+                                      [-1, -1, -1]])
+
         _, frame = self.cap.read()
         orig_frame = frame.copy()
-        img = cv2.cvtColor(orig_frame, cv2.COLOR_BGR2HSV)
+        blur_image = cv2.GaussianBlur(orig_frame, (21, 21), 0)
+        img = cv2.cvtColor(blur_image, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(img, self.lower, self.upper)
 
         # Drawing Bounding Boxes Around Detected Objects
@@ -42,7 +48,7 @@ class image_process:
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(orig_frame, str(self.red_count), (10, 30), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
-        return orig_frame, self.red_count
+        return orig_frame, self.red_count, img
 
         # 顯示圖片
 
