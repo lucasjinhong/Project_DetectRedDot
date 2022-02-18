@@ -4,6 +4,7 @@ import numpy as np
 import json
 import paho.mqtt.client as mqtt
 import torch
+from collections import Counter
 
 import http_mqtt
 import encode_base64
@@ -34,22 +35,26 @@ def main():
         red_count = 0
 
         # 影像處理
-        orig_frame, red_count, g_blur = cam_image.image_process(cap, lower, upper, red_count).process()
+        orig_frame, red_count = cam_image.image_process(cap, lower, upper, red_count).process()
 
         cv2.imshow('Detected Objects', orig_frame)
-        cv2.imshow('g_blur', g_blur)
-
-        result = model(orig_frame)
-        result.print()
 
         if wait < 50:
             wait += 1
 
         else:
-            payload = {'color': 'red', 'value': red_count,
+            result = model(orig_frame)
+            data = result.pandas().xyxy[0].name
+
+            #print(Counter(data))
+
+            payload = { #'color': 'red', 'value': red_count,
+                         'value':tuple(Counter(data)),
                        'time': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                        'imgBase64': encode_base64.encode(orig_frame)
                        }
+
+            print(payload)
 
             # Send http request
             if red_count > 0:

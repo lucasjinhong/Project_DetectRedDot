@@ -48,7 +48,7 @@ class image_process:
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(orig_frame, str(self.red_count), (10, 30), font, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
-        return orig_frame, self.red_count, img
+        return orig_frame, self.red_count
 
         # 顯示圖片
 
