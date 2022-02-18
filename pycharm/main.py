@@ -3,6 +3,7 @@ import datetime
 import numpy as np
 import json
 import paho.mqtt.client as mqtt
+import torch
 
 import http_mqtt
 import encode_base64
@@ -25,6 +26,8 @@ def main():
     client.username_pw_set('', '')  # 設定登入帳號密碼
     client.connect("140.124.73.217", 1883, 180)  # 設定連線資訊(IP, Port, 連線時間)
 
+    model = torch.hub.load('ultralytics/yolov5', 'yolov5n')
+
     wait = 0
 
     while True:
@@ -35,6 +38,9 @@ def main():
 
         cv2.imshow('Detected Objects', orig_frame)
         cv2.imshow('g_blur', g_blur)
+
+        result = model(orig_frame)
+        result.show()
 
         if wait < 50:
             wait += 1
