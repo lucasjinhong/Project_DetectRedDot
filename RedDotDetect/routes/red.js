@@ -10,7 +10,6 @@ var url = "mongodb://localhost:27017/";
 router.post('/',urlencodedParser, (req, res, next) => {
     response = 
     {  
-        color:req.body.color,  
         value:req.body.value,
         date:req.body.time,
         img:req.body.imgBase64
@@ -21,10 +20,10 @@ router.post('/',urlencodedParser, (req, res, next) => {
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         var dbo = db.db("DetectRedDot");
-        var myobj = [{time: new Date(), records:{color:response.color, value:response.value}, image:response.img}];
+        var myobj = [{time: new Date(), records:response.value, image:response.img}];
         dbo.collection("RedDot").insertMany(myobj, function(err, res) {
           if (err) throw err;
-          console.log(res, '\n' , {color:response.color, value:response.value}, '\n');
+          console.log(res, '\n' , {value:response.value}, '\n');
           db.close();
         });
     });

@@ -44,20 +44,15 @@ def main():
 
         else:
             result = model(orig_frame)
-            data = result.pandas().xyxy[0].name
+            data = Counter(result.pandas().xyxy[0].name).most_common()
 
-            #print(Counter(data))
-
-            payload = { #'color': 'red', 'value': red_count,
-                         'value':tuple(Counter(data)),
+            payload = {'value': data,
                        'time': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                        'imgBase64': encode_base64.encode(orig_frame)
                        }
 
-            print(payload)
-
             # Send http request
-            if red_count > 0:
+            if data:
                 http_mqtt.send_http(http_url, payload).http_request()
 
             # mqtt publish
