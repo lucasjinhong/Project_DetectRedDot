@@ -40,7 +40,7 @@ def main():
         cv2.imshow('g_blur', g_blur)
 
         result = model(orig_frame)
-        result.show()
+        result.print()
 
         if wait < 50:
             wait += 1
